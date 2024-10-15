@@ -138,7 +138,11 @@ impl NatsSinkConfig {
     pub(super) async fn connect(&self) -> Result<async_nats::Client, NatsError> {
         let options: async_nats::ConnectOptions = self.try_into().context(ConfigSnafu)?;
 
-        options.connect(&self.url).await.context(ConnectSnafu)
+        options
+            .tls_first()
+            .connect(&self.url)
+            .await
+            .context(ConnectSnafu)
     }
 
     pub(super) async fn publisher(&self) -> Result<NatsPublisher, NatsError> {
